@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="content_authority" translatable="false">nl.idesign.spotifystreamer</string>
+
+    <string name="app_name">Spotify Streamer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Search strings -->
+    <string name="spotify_seach_failed_title">Something went wrong..</string>
+    <string name="spotify_seach_failed_desc">Something went wrong looking for the artists</string>
+    <string name="title_activity_top_tracks">TopTracksActivity</string>
+
+</resources>
