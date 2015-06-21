@@ -6,17 +6,20 @@
     <string name="app_name">Spotify Streamer</string>
     <string name="title_activity_top_tracks">Top 10 Tracks</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
     <!-- Search strings -->
     <string name="spotify_search">Artist name</string>
+    <string name="spotify_search_content_description">artist %s image</string>
 
     <string name="spotify_seach_failed_title">Something went wrong..</string>
     <string name="spotify_seach_failed_desc">Something went wrong looking for the artists</string>
 
     <string name="spotify_seach_no_results_title">Nothing to show</string>
     <string name="spotify_seach_no_results">Hmmm, we can\'t find the artist you are looking for. Please try with different keywords.  </string>
+
+    <!-- Top tracks strings -->
+    <string name="spotify_top_tracks_content_description">Album %s image</string>
 
 
 </resources>

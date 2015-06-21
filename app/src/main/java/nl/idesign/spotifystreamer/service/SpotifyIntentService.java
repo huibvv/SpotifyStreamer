@@ -79,7 +79,7 @@ public class SpotifyIntentService extends IntentService {
                 getBaseContext().getContentResolver().insert(SpotifyStreamerDataContract.ArtistEntry.CONTENT_URI, artistValues);
 
                 ContentValues values;
-                List<ContentValues> contentList = new ArrayList<ContentValues>();
+                List<ContentValues> contentList = new ArrayList<>();
                 for (Track track : tracks.tracks) {
                     values = new ContentValues();
                     values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID, track.id);

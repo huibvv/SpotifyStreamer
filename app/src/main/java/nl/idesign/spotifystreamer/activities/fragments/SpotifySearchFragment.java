@@ -1,6 +1,5 @@
 package nl.idesign.spotifystreamer.activities.fragments;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -8,18 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,21 +23,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyCallback;
-import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.Artists;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import nl.idesign.spotifystreamer.R;
 import nl.idesign.spotifystreamer.activities.TopTracksActivity;
 import nl.idesign.spotifystreamer.adapters.SpotifySearchAdapter;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by huib on 7-6-2015.
@@ -73,7 +61,7 @@ public class SpotifySearchFragment extends Fragment {
         mSpotifyResultListView = (ListView)rootView.findViewById(R.id.spotify_search_result_listview);
         mNothingFound = (LinearLayout)rootView.findViewById(R.id.nothing_found_layout);
 
-        mAdapter = new SpotifySearchAdapter(getActivity(), R.layout.spotify_search_result_list_item);
+        mAdapter = new SpotifySearchAdapter(getActivity());
         if(mQueryArtists != null){
             mAdapter.addAll(mQueryArtists);
         }
@@ -116,11 +104,11 @@ public class SpotifySearchFragment extends Fragment {
         }
         mLoadingResults = true;
         mShouldClear = true;
-        new SearchArtistsTask().execute(new String[]{artist});
+        new SearchArtistsTask().execute(artist);
 
     }
 
-    private AbsListView.OnScrollListener mOnResultScrollListener = new AbsListView.OnScrollListener() {
+    private final AbsListView.OnScrollListener mOnResultScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
 
@@ -132,12 +120,12 @@ public class SpotifySearchFragment extends Fragment {
                 //We need to load more...
                 mLoadingResults = true;
                 mShouldClear = false;
-                new SearchArtistsTask().execute(new String[]{mSearchEditText.getText().toString()});
+                new SearchArtistsTask().execute(mSearchEditText.getText().toString());
             }
         }
     };
 
-    private AdapterView.OnItemClickListener mOnSportifyResultItemClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener mOnSportifyResultItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent topTrackIntent = new Intent(getActivity(), TopTracksActivity.class);

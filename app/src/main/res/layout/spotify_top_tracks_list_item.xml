@@ -21,12 +21,12 @@
             android:id="@+id/spotify_top_track_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dummy name"/>
+            />
         <TextView
             android:id="@+id/spotify_top_track_album_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dummy name"/>
+            />
         </LinearLayout>
 
 </LinearLayout>

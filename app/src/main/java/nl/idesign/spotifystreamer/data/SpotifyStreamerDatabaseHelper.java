@@ -12,11 +12,11 @@ import android.util.Log;
  */
 public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
 
-    private static String LOG_TAG = SpotifyStreamerDatabaseHelper.class.getSimpleName();
+    private static final String LOG_TAG = SpotifyStreamerDatabaseHelper.class.getSimpleName();
 
     private static final int DATABASE_VERSION = 4;
 
-    static final String DATABASE_NAME = "spotifystreamer.db";
+    private static final String DATABASE_NAME = "spotifystreamer.db";
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String REAL_TYPE = " REAL";
@@ -26,12 +26,10 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String NOT_NULL = "  NOT NULL";
 
-    private Context mContext;
     private static SpotifyStreamerDatabaseHelper mInstance;
 
-    public SpotifyStreamerDatabaseHelper(Context context) {
+    private SpotifyStreamerDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
     }
 
     public static SpotifyStreamerDatabaseHelper getInstance(Context context) {
@@ -77,13 +75,13 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME);
     }
 
-    public static String createArtistTable(){
+    private static String createArtistTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME + " (" +
                 SpotifyStreamerDataContract.ArtistEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
                 SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + " UNIQUE " + NOT_NULL + " )";
     }
 
-    public static String createTopTracksTable(){
+    private static String createTopTracksTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.TopTracksEntry.TABLE_NAME + " (" +
                 SpotifyStreamerDataContract.TopTracksEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + NOT_NULL + COMMA_SEP +

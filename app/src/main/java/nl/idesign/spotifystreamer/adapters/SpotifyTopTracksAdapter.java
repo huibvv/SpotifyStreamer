@@ -19,7 +19,7 @@ import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
  */
 public class SpotifyTopTracksAdapter extends CursorAdapter {
 
-    public static String[] mProjection = new String[]{
+    public static final String[] mProjection = new String[]{
             SpotifyStreamerDataContract.TopTracksEntry._ID,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME,
@@ -27,16 +27,16 @@ public class SpotifyTopTracksAdapter extends CursorAdapter {
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_THUMBNAIL
     };
 
-    public static int COL_ID = 0;
-    public static int COL_TRACK_ID = 1;
-    public static int COL_TRACK_NAME = 2;
-    public static int COL_ALBUM_NAME = 3;
-    public static int COL_THUMBNAIL = 4;
+    public final static int COL_ID = 0;
+    public final static int COL_TRACK_ID = 1;
+    public final static int COL_TRACK_NAME = 2;
+    public final static int COL_ALBUM_NAME = 3;
+    public final static int COL_THUMBNAIL = 4;
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
 
-    public SpotifyTopTracksAdapter(Context context, Cursor c, boolean autoRequery) {
-        super(context, c, autoRequery);
+    public SpotifyTopTracksAdapter(Context context, boolean autoRequery) {
+        super(context, null, autoRequery);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -58,6 +58,7 @@ public class SpotifyTopTracksAdapter extends CursorAdapter {
         holder.mTrackNameTextView.setText(cursor.getString(COL_TRACK_NAME));
 
         String imageUrl = cursor.getString(COL_THUMBNAIL);
+        holder.mAlbumImageView.setContentDescription(String.format(context.getString(R.string.spotify_top_tracks_content_description), cursor.getString(COL_ALBUM_NAME)));
         if(imageUrl.isEmpty()){
             //Set a default image
         }else {

@@ -17,10 +17,10 @@ import nl.idesign.spotifystreamer.R;
  * Created by huib on 7-6-2015.
  */
 public class SpotifySearchAdapter extends ArrayAdapter<Artist> {
-    private Context mContext;
+    private final Context  mContext;
 
-    public SpotifySearchAdapter(Context context, int resource) {
-        super(context, resource);
+    public SpotifySearchAdapter(Context context) {
+        super(context, R.layout.spotify_search_result_list_item);
         mContext = context;
     }
 
@@ -30,7 +30,7 @@ public class SpotifySearchAdapter extends ArrayAdapter<Artist> {
         ViewHolder holder;
 
         if(convertView == null){
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);;
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.spotify_search_result_list_item, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -42,6 +42,8 @@ public class SpotifySearchAdapter extends ArrayAdapter<Artist> {
         holder.mArtistName.setText(artist.name);
 
         holder.mArtistImage.setImageBitmap(null);
+        holder.mArtistImage.setContentDescription(String.format(mContext.getString(R.string.spotify_search_content_description), artist.name));
+
         if(artist.images == null || artist.images.size() == 0){
             //Set a default image
         }else {
@@ -53,8 +55,8 @@ public class SpotifySearchAdapter extends ArrayAdapter<Artist> {
 
 
     private class ViewHolder{
-        public TextView mArtistName;
-        public ImageView mArtistImage;
+        public final TextView  mArtistName;
+        public final ImageView  mArtistImage;
 
         public ViewHolder(View rootView){
             mArtistName = (TextView)rootView.findViewById(R.id.spotify_search_result_textview);

@@ -6,21 +6,14 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.HashMap;
-import java.util.List;
-
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
 import nl.idesign.spotifystreamer.R;
 import nl.idesign.spotifystreamer.adapters.SpotifyTopTracksAdapter;
 import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
@@ -34,15 +27,9 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
     private static final String LOG_TAG = TopTracksFragment.class.getSimpleName();
     public static final String PARAM_EXTRA_ARTIST_ID = "artist_id";
 
-    private SpotifyService mSpotifyService;
-
     private static TopTracksFragment mInstance;
-    private String mArtistId;
-
     private static final int TOP_TRACKS_LOADER = 0;
 
-
-    private ListView mTopTracksListView;
     private SpotifyTopTracksAdapter mAdapter;
 
     public static TopTracksFragment getInstance(){
@@ -59,16 +46,17 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
         View rootView = inflater.inflate(R.layout.fragment_top_tracks, container);
 
         Intent intent = getActivity().getIntent();
-        if(intent == null){
-
-        }
 
         String artistId = intent.getStringExtra(PARAM_EXTRA_ARTIST_ID);
+        if(artistId == null || artistId.isEmpty()){
+            Log.e(LOG_TAG, "No artist ID found, we can't get the top tracks");
+            getActivity().finish();
+        }
         SpotifyIntentService.getTopTracks(getActivity(), artistId);
 
-        mTopTracksListView = (ListView)rootView.findViewById(R.id.top_tracks_listview);
-        mAdapter = new SpotifyTopTracksAdapter(getActivity(), null, true);
-        mTopTracksListView.setAdapter(mAdapter);
+        ListView topTracksListView = (ListView)rootView.findViewById(R.id.top_tracks_listview);
+        mAdapter = new SpotifyTopTracksAdapter(getActivity(), true);
+        topTracksListView.setAdapter(mAdapter);
 
         return rootView;
     }

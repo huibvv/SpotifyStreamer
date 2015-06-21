@@ -16,5 +16,5 @@
         android:id="@+id/spotify_search_result_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Coldpaly"/>
+       />
 </LinearLayout>

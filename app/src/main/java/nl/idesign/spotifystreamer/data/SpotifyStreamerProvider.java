@@ -1,13 +1,11 @@
 package nl.idesign.spotifystreamer.data;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 /**
@@ -28,7 +26,7 @@ public class SpotifyStreamerProvider extends ContentProvider {
         super();
     }
 
-    static UriMatcher buildUriMatcher() {
+    private static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = SpotifyStreamerDataContract.CONTENT_AUTHORITY;
 
@@ -240,8 +238,7 @@ public class SpotifyStreamerProvider extends ContentProvider {
     }
 
     @Override
-    @NonNull
-    public int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsInserted;
