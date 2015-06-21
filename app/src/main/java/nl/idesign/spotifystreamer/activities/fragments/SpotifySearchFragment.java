@@ -16,6 +16,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,6 +55,8 @@ public class SpotifySearchFragment extends Fragment {
     private EditText mSearchEditText;
     private SpotifySearchAdapter mAdapter;
 
+    private LinearLayout mNothingFound;
+
     private static final String SAVED_INSTANCE_RESULTS = "query_results";
 
     private boolean mLoadingResults;
@@ -68,6 +71,8 @@ public class SpotifySearchFragment extends Fragment {
 
         mSearchEditText = (EditText)rootView.findViewById(R.id.spotify_search_textview);
         mSpotifyResultListView = (ListView)rootView.findViewById(R.id.spotify_search_result_listview);
+        mNothingFound = (LinearLayout)rootView.findViewById(R.id.nothing_found_layout);
+
         mAdapter = new SpotifySearchAdapter(getActivity(), R.layout.spotify_search_result_list_item);
         if(mQueryArtists != null){
             mAdapter.addAll(mQueryArtists);
@@ -162,6 +167,14 @@ public class SpotifySearchFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Artist> artists) {
+            if(artists.size() == 0){
+                mNothingFound.setVisibility(View.VISIBLE);
+                mSpotifyResultListView.setVisibility(View.GONE);
+            }else {
+                mNothingFound.setVisibility(View.GONE);
+                mSpotifyResultListView.setVisibility(View.VISIBLE);
+            }
+
             mQueryArtists = artists;
             if(mShouldClear)
                 mAdapter.clear();

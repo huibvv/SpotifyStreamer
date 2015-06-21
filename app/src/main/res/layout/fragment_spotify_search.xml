@@ -7,11 +7,27 @@
 <EditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/spotify_search_textview"/>
+    android:hint="@string/spotify_search"
+    android:id="@+id/spotify_search_textview"
+    android:singleLine="true" />
     <ListView
         android:id="@+id/spotify_search_result_listview"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         tools:listitem="@layout/spotify_search_result_list_item"
         ></ListView>
+    <LinearLayout
+        android:id="@+id/nothing_found_layout"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:text="@string/spotify_seach_no_results_title" ></TextView>
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/spotify_seach_no_results" ></TextView>
+    </LinearLayout>
 </LinearLayout>

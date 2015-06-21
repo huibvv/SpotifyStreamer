@@ -10,8 +10,13 @@
     <string name="action_settings">Settings</string>
 
     <!-- Search strings -->
+    <string name="spotify_search">Artist name</string>
+
     <string name="spotify_seach_failed_title">Something went wrong..</string>
     <string name="spotify_seach_failed_desc">Something went wrong looking for the artists</string>
+
+    <string name="spotify_seach_no_results_title">Nothing to show</string>
+    <string name="spotify_seach_no_results">Hmmm, we can\'t find the artist you are looking for. Please try with different keywords.  </string>
 
 
 </resources>
