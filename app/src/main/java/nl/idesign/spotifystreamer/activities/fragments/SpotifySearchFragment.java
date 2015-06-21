@@ -20,6 +20,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +54,12 @@ public class SpotifySearchFragment extends Fragment {
     private EditText mSearchEditText;
     private SpotifySearchAdapter mAdapter;
 
+    private static final String SAVED_INSTANCE_RESULTS = "query_results";
+
     private boolean mLoadingResults;
     private boolean mShouldClear = true;
 
-
+    private List<Artist> mQueryArtists;
 
     @Nullable
     @Override
@@ -62,6 +69,10 @@ public class SpotifySearchFragment extends Fragment {
         mSearchEditText = (EditText)rootView.findViewById(R.id.spotify_search_textview);
         mSpotifyResultListView = (ListView)rootView.findViewById(R.id.spotify_search_result_listview);
         mAdapter = new SpotifySearchAdapter(getActivity(), R.layout.spotify_search_result_list_item);
+        if(mQueryArtists != null){
+            mAdapter.addAll(mQueryArtists);
+        }
+
         mSpotifyResultListView.setAdapter(mAdapter);
 
         mSpotifyResultListView.setOnItemClickListener(mOnSportifyResultItemClickListener);
@@ -128,6 +139,7 @@ public class SpotifySearchFragment extends Fragment {
 
             Artist artist =  mAdapter.getItem(position);
             topTrackIntent.putExtra(TopTracksFragment.PARAM_EXTRA_ARTIST_ID, artist.id);
+            topTrackIntent.putExtra(TopTracksActivity.PARAM_ARTIST_NAME, artist.name);
             startActivity(topTrackIntent);
         }
     };
@@ -144,19 +156,52 @@ public class SpotifySearchFragment extends Fragment {
                 optionMap.put(SpotifyService.OFFSET, mAdapter.getCount());
             }
 
-            ArtistsPager artistsPager =  mSpotifyService.searchArtists(params[0], optionMap );
+            ArtistsPager artistsPager =  mSpotifyService.searchArtists(params[0] + "*", optionMap );
             return artistsPager.artists.items;
         }
 
         @Override
         protected void onPostExecute(List<Artist> artists) {
+            mQueryArtists = artists;
             if(mShouldClear)
                 mAdapter.clear();
             mAdapter.addAll(artists);
             mLoadingResults = false;
-            //super.onPostExecute(aLong);
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(outState == null){
+            outState = new Bundle();
+        }
 
+        if(mQueryArtists != null && mQueryArtists.size() > 0) {
+            Gson gson = new Gson();
+            outState.putString(SAVED_INSTANCE_RESULTS, gson.toJson(mQueryArtists));
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+
+        if(savedInstanceState == null){
+            super.onViewStateRestored(savedInstanceState);
+            return;
+        }
+
+        String queryResult = savedInstanceState.getString(SAVED_INSTANCE_RESULTS, "");
+        if(!queryResult.isEmpty()){
+            Gson gson = new Gson();
+            Type artistListType = new TypeToken<ArrayList<Artist>>() {}.getType();
+            mQueryArtists = gson.fromJson(queryResult, artistListType);
+            if(mAdapter != null) {
+                mAdapter.addAll(mQueryArtists);
+            }
+        }
+
+        super.onViewStateRestored(savedInstanceState);
+    }
 }

@@ -2,6 +2,7 @@ package nl.idesign.spotifystreamer.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -19,27 +20,30 @@ import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
 public class SpotifyTopTracksAdapter extends CursorAdapter {
 
     public static String[] mProjection = new String[]{
+            SpotifyStreamerDataContract.TopTracksEntry._ID,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_NAME,
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_THUMBNAIL
     };
 
-    public static int COL_TRACK_ID = 0;
-    public static int COL_TRACK_NAME = 1;
-    public static int COL_ALBUM_NAME = 2;
-    public static int COL_THUMBNAIL = 3;
+    public static int COL_ID = 0;
+    public static int COL_TRACK_ID = 1;
+    public static int COL_TRACK_NAME = 2;
+    public static int COL_ALBUM_NAME = 3;
+    public static int COL_THUMBNAIL = 4;
 
-private Context mContext;
+    private LayoutInflater mInflater;
 
     public SpotifyTopTracksAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
-        mContext = context;
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return null;
+
+        return mInflater.inflate(R.layout.spotify_top_tracks_list_item, parent, false);
     }
 
     @Override
@@ -57,7 +61,7 @@ private Context mContext;
         if(imageUrl.isEmpty()){
             //Set a default image
         }else {
-            Picasso.with(mContext).load(imageUrl).into(holder.mAlbumImageView);
+            Picasso.with(context).load(imageUrl).into(holder.mAlbumImageView);
         }
     }
 

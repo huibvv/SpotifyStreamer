@@ -9,6 +9,7 @@ import android.provider.BaseColumns;
  * Created by huib on 8-6-2015.
  */
 public class SpotifyStreamerDataContract {
+
     public static final String CONTENT_AUTHORITY = "nl.idesign.spotifystreamer";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -32,8 +33,7 @@ public class SpotifyStreamerDataContract {
         }
 
         public static String getArtistID(Uri artistUri){
-            String id = artistUri.getPathSegments().get(1);
-            return id;
+            return artistUri.getPathSegments().get(1);
         }
 
     }
@@ -61,8 +61,7 @@ public class SpotifyStreamerDataContract {
         }
 
         public static String getTopTrackID(Uri topTrackUri){
-            String id = topTrackUri.getPathSegments().get(1);
-            return id;
+            return topTrackUri.getPathSegments().get(1);
         }
     }
 }

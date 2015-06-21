@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 
 /**
  * Created by huib on 8-6-2015.
@@ -42,6 +43,7 @@ public class SpotifyStreamerProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        mDbHelper = SpotifyStreamerDatabaseHelper.getInstance(getContext());
         return false;
     }
 
@@ -238,10 +240,11 @@ public class SpotifyStreamerProvider extends ContentProvider {
     }
 
     @Override
+    @NonNull
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-        int rowsInserted = 0;
+        int rowsInserted;
 
         switch (match) {
             case ARTISTS: {

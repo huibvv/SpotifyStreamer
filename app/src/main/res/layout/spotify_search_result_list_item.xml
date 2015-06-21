@@ -2,14 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:gravity="center_vertical"
+    android:padding="16dp"
     android:layout_height="wrap_content">
 <ImageView
     android:id="@+id/spotify_search_result_imageview"
     android:layout_width="100dp"
-    android:layout_height="100dp" />
+    android:layout_height="100dp"
+    android:adjustViewBounds="true"
+    android:scaleType="centerCrop"
+    android:src="@drawable/ic_launcher"/>
     <TextView
+        android:layout_marginLeft="16dp"
         android:id="@+id/spotify_search_result_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dummy name"/>
+        android:text="Coldpaly"/>
 </LinearLayout>

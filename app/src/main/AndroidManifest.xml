@@ -9,6 +9,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <provider
+            android:name=".data.SpotifyStreamerProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"
+            android:syncable="true" >
+        </provider>
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name" >
@@ -22,6 +28,7 @@
             android:name=".activities.TopTracksActivity"
             android:label="@string/title_activity_top_tracks" >
         </activity>
+        <service android:name=".service.SpotifyIntentService" ></service>
     </application>
 
 </manifest>

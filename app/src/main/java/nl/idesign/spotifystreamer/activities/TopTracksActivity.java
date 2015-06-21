@@ -9,10 +9,21 @@ import nl.idesign.spotifystreamer.R;
 
 public class TopTracksActivity extends ActionBarActivity {
 
+    public static final String PARAM_ARTIST_NAME = "artist_name";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_tracks);
+
+        String artistName = getIntent().getStringExtra(PARAM_ARTIST_NAME);
+
+        if(artistName != null && !artistName.isEmpty()) {
+            if(getSupportActionBar() == null){
+                return;
+            }
+            getSupportActionBar().setSubtitle(artistName);
+        }
     }
 
 

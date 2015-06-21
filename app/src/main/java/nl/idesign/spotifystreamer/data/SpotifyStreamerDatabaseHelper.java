@@ -14,7 +14,7 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
 
     private static String LOG_TAG = SpotifyStreamerDatabaseHelper.class.getSimpleName();
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
 
     static final String DATABASE_NAME = "spotifystreamer.db";
 
@@ -79,13 +79,13 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
 
     public static String createArtistTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME + " (" +
-                SpotifyStreamerDataContract.ArtistEntry._ID + " INTEGER PRIMARY KEY," + COMMA_SEP +
-                SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + " UNIQUE "  + TEXT_TYPE + NOT_NULL +" )";
+                SpotifyStreamerDataContract.ArtistEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
+                SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + " UNIQUE " + NOT_NULL + " )";
     }
 
     public static String createTopTracksTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.TopTracksEntry.TABLE_NAME + " (" +
-                SpotifyStreamerDataContract.TopTracksEntry._ID + " INTEGER PRIMARY KEY," + COMMA_SEP +
+                SpotifyStreamerDataContract.TopTracksEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_NAME + TEXT_TYPE + COMMA_SEP +
@@ -94,7 +94,7 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_THUMBNAIL + TEXT_TYPE  + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_PREVIEW_URL + TEXT_TYPE  + COMMA_SEP +
                 " FOREIGN KEY(" + SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + ") REFERENCES " +
-                SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME + " (" + SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + ") ON DELETE CASCADE" +" )";
+                SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME + " (" + SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + ") ON DELETE CASCADE ON UPDATE CASCADE" +" )";
 
     }
 }
