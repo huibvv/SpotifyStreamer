@@ -2,17 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:gravity="center_vertical"
-    android:padding="16dp"
+    android:padding="@dimen/list_item_padding"
     android:layout_height="wrap_content">
 <ImageView
     android:id="@+id/spotify_search_result_imageview"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
+    android:layout_width="@dimen/spotify_image_width"
+    android:layout_height="@dimen/spotify_image_height"
     android:adjustViewBounds="true"
     android:scaleType="centerCrop"
     android:src="@drawable/ic_launcher"/>
     <TextView
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="@dimen/list_item_text_padding"
         android:id="@+id/spotify_search_result_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
