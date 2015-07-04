@@ -12,14 +12,20 @@
     <string name="spotify_search">Artist name</string>
     <string name="spotify_search_content_description">artist %s image</string>
 
-    <string name="spotify_seach_failed_title">Something went wrong..</string>
-    <string name="spotify_seach_failed_desc">Something went wrong looking for the artists</string>
+    <string name="spotify_search_failed_title">Something went wrong..</string>
+    <string name="spotify_search_failed_desc">Something went wrong looking for the artists</string>
 
-    <string name="spotify_seach_no_results_title">Nothing to show</string>
-    <string name="spotify_seach_no_results">Hmmm, we can\'t find the artist you are looking for. Please try with different keywords.  </string>
+    <string name="spotify_search_no_results_title">Nothing to show</string>
+    <string name="spotify_search_no_results">Hmmm, we can\'t find the artist you are looking for. Please try with different keywords.  </string>
 
     <!-- Top tracks strings -->
     <string name="spotify_top_tracks_content_description">Album %s image</string>
+
+    <string name="spotify_toptracks_failed">No top tracks were fetched from the server</string>
+
+    <!-- Connectivity messages -->
+    <string name="no_connection_title" >Not connected</string>
+    <string name="no_connection_description" >Hmm, It seems you\'re not connected to the internet. To use this app, you need to be connected to the cloud</string>
 
 
 </resources>

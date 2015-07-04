@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import nl.idesign.spotifystreamer.Constants;
 import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -24,6 +26,12 @@ import retrofit.client.Response;
  * Created by huib on 9-6-2015.
  */
 public class SpotifyIntentService extends IntentService {
+
+    public static final String BROADCAST_RESULT = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT";
+    public static final String BROADCAST_RESULT_CODE = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT_CODE";
+    public static final String BROADCAST_RESULT_MESSAGE = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT_MESSAGE";
+    //public static final String BROADCAST_ACTION = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT";
+
 
 
     private static final String LOG_TAG = SpotifyIntentService.class.getSimpleName();
@@ -103,11 +111,23 @@ public class SpotifyIntentService extends IntentService {
                     //hmm, something went wrong i guess
                 }
 
+                Intent resultIntent = new Intent(BROADCAST_RESULT);
+                resultIntent.putExtra(BROADCAST_RESULT_CODE, Constants.BROADCAST_RESULT_OK);
+                resultIntent.putExtra(BROADCAST_RESULT_MESSAGE, "Ok");
+
+                LocalBroadcastManager.getInstance(SpotifyIntentService.this).sendBroadcast(resultIntent);
+
             }
 
             @Override
             public void failure(RetrofitError error) {
                 Log.e(LOG_TAG, "Failed to get the top tracks", error);
+
+                Intent resultIntent = new Intent(BROADCAST_RESULT);
+                resultIntent.putExtra(BROADCAST_RESULT_CODE, Constants.BROADCAST_RESULT_FAILED);
+                resultIntent.putExtra(BROADCAST_RESULT_MESSAGE, "Failed to get the top tracks");
+
+                LocalBroadcastManager.getInstance(SpotifyIntentService.this).sendBroadcast(resultIntent);
             }
         });
 

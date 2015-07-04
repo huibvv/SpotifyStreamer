@@ -1,6 +1,8 @@
 package nl.idesign.spotifystreamer.activities.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 import nl.idesign.spotifystreamer.R;
 import nl.idesign.spotifystreamer.activities.TopTracksActivity;
 import nl.idesign.spotifystreamer.adapters.SpotifySearchAdapter;
+import nl.idesign.spotifystreamer.utils.Connectivity;
 
 /**
  * Created by huib on 7-6-2015.
@@ -56,6 +59,13 @@ public class SpotifySearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_spotify_search, container);
+
+        //To use this application we need a connection, so first we check if there is a connection
+        if(!Connectivity.isNetworkAvailable(getActivity())){
+            showNoConnectionDialog();
+            return rootView;
+        }
+
 
         mSearchEditText = (EditText)rootView.findViewById(R.id.spotify_search_textview);
         mSpotifyResultListView = (ListView)rootView.findViewById(R.id.spotify_search_result_listview);
@@ -90,6 +100,17 @@ public class SpotifySearchFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void showNoConnectionDialog(){
+        new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.no_connection_title))
+                .setMessage(getString(R.string.no_connection_description))
+                .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getActivity().finish();
+                    }
+                }).show();
     }
 
     private void searchSportify(String artist){
@@ -189,7 +210,7 @@ public class SpotifySearchFragment extends Fragment {
     public void onViewStateRestored(Bundle savedInstanceState) {
 
         if(savedInstanceState == null){
-            super.onViewStateRestored(savedInstanceState);
+            super.onViewStateRestored(null);
             return;
         }
 

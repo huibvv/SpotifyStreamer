@@ -2,25 +2,31 @@ package nl.idesign.spotifystreamer.activities.fragments;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import nl.idesign.spotifystreamer.Constants;
 import nl.idesign.spotifystreamer.R;
 import nl.idesign.spotifystreamer.adapters.SpotifyTopTracksAdapter;
 import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
 import nl.idesign.spotifystreamer.service.SpotifyIntentService;
 
 /**
- * Created by huib on 8-6-2015.
+ * This fragment shows the top tracks of a artist.
  */
 public class TopTracksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -52,7 +58,13 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
             Log.e(LOG_TAG, "No artist ID found, we can't get the top tracks");
             getActivity().finish();
         }
+
+        IntentFilter filter = new IntentFilter(SpotifyIntentService.BROADCAST_RESULT);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new TopTracksResponseReceiver(), filter);
+
         SpotifyIntentService.getTopTracks(getActivity(), artistId);
+
+
 
         ListView topTracksListView = (ListView)rootView.findViewById(R.id.top_tracks_listview);
         mAdapter = new SpotifyTopTracksAdapter(getActivity(), true);
@@ -87,6 +99,17 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().getLoaderManager().initLoader(TOP_TRACKS_LOADER, null, this);
+    }
+
+    private class TopTracksResponseReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int result = intent.getIntExtra(SpotifyIntentService.BROADCAST_RESULT_CODE, -1);
+            if(result == Constants.BROADCAST_RESULT_FAILED){
+                //Something went wrong, show a message
+                Toast.makeText(getActivity(),getActivity().getString(R.string.spotify_toptracks_failed), Toast.LENGTH_LONG);
+            }
+        }
     }
 
 }
