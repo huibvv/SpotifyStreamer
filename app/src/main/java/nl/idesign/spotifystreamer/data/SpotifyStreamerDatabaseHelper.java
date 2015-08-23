@@ -14,7 +14,7 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String LOG_TAG = SpotifyStreamerDatabaseHelper.class.getSimpleName();
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String DATABASE_NAME = "spotifystreamer.db";
 
@@ -73,18 +73,20 @@ public class SpotifyStreamerDatabaseHelper extends SQLiteOpenHelper {
         //Just drop the tables for now...
         db.execSQL("DROP TABLE IF EXISTS " + SpotifyStreamerDataContract.TopTracksEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME);
+        this.onCreate(db);
     }
 
     private static String createArtistTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.ArtistEntry.TABLE_NAME + " (" +
                 SpotifyStreamerDataContract.ArtistEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
-                SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + " UNIQUE " + NOT_NULL + " )";
+                SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + " UNIQUE " + NOT_NULL +  " )";
     }
 
     private static String createTopTracksTable(){
         return  "CREATE TABLE " + SpotifyStreamerDataContract.TopTracksEntry.TABLE_NAME + " (" +
                 SpotifyStreamerDataContract.TopTracksEntry._ID + " INTEGER PRIMARY KEY " + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + TEXT_TYPE + NOT_NULL + COMMA_SEP +
+                SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_NAME + TEXT_TYPE + NOT_NULL +  COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_NAME + TEXT_TYPE + COMMA_SEP +
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME + TEXT_TYPE + COMMA_SEP +

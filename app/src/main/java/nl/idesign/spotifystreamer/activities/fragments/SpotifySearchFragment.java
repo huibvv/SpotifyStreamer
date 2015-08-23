@@ -12,11 +12,13 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -31,6 +33,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import nl.idesign.spotifystreamer.R;
+import nl.idesign.spotifystreamer.activities.MainActivity;
 import nl.idesign.spotifystreamer.activities.TopTracksActivity;
 import nl.idesign.spotifystreamer.adapters.SpotifySearchAdapter;
 import nl.idesign.spotifystreamer.utils.Connectivity;
@@ -43,7 +46,7 @@ public class SpotifySearchFragment extends Fragment {
     private SpotifyService mSpotifyService;
 
     private ListView mSpotifyResultListView;
-    private EditText mSearchEditText;
+    private SearchView mSearchEditText;
     private SpotifySearchAdapter mAdapter;
 
     private LinearLayout mNothingFound;
@@ -51,14 +54,21 @@ public class SpotifySearchFragment extends Fragment {
     private static final String SAVED_INSTANCE_RESULTS = "query_results";
 
     private boolean mLoadingResults;
+    private String mCurrentSearchQuery;
     private boolean mShouldClear = true;
 
     private List<Artist> mQueryArtists;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_spotify_search, container);
+        View rootView = inflater.inflate(R.layout.fragment_spotify_search, null);
 
         //To use this application we need a connection, so first we check if there is a connection
         if(!Connectivity.isNetworkAvailable(getActivity())){
@@ -67,7 +77,7 @@ public class SpotifySearchFragment extends Fragment {
         }
 
 
-        mSearchEditText = (EditText)rootView.findViewById(R.id.spotify_search_textview);
+        mSearchEditText = (SearchView)rootView.findViewById(R.id.spotify_search_textview);
         mSpotifyResultListView = (ListView)rootView.findViewById(R.id.spotify_search_result_listview);
         mNothingFound = (LinearLayout)rootView.findViewById(R.id.nothing_found_layout);
 
@@ -82,23 +92,19 @@ public class SpotifySearchFragment extends Fragment {
 
         //scroll listener so we know when to load more results
         mSpotifyResultListView.setOnScrollListener(mOnResultScrollListener);
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
+        mSearchEditText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            public boolean onQueryTextSubmit(String query) {
+                searchSportify(query);
+                return false;
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchSportify(s.toString());
+            public boolean onQueryTextChange(String newText) {
+                searchSportify(newText);
+                return false;
             }
         });
-
         return rootView;
     }
 
@@ -114,6 +120,11 @@ public class SpotifySearchFragment extends Fragment {
     }
 
     private void searchSportify(String artist){
+        if(mCurrentSearchQuery != null && mCurrentSearchQuery.equals(artist)){
+            return;
+        }
+        mCurrentSearchQuery = artist;
+
         if(mSpotifyService == null) {
             SpotifyApi api = new SpotifyApi();
             mSpotifyService = api.getService();
@@ -138,10 +149,14 @@ public class SpotifySearchFragment extends Fragment {
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             if(!mLoadingResults && view.getLastVisiblePosition() == mAdapter.getCount()-1 && mAdapter.getCount() > 0){
+                if(visibleItemCount == totalItemCount){
+                    //no scroll, but a reload
+                    return;
+                }
                 //We need to load more...
                 mLoadingResults = true;
                 mShouldClear = false;
-                new SearchArtistsTask().execute(mSearchEditText.getText().toString());
+                new SearchArtistsTask().execute(mSearchEditText.getQuery().toString());
             }
         }
     };
@@ -149,18 +164,15 @@ public class SpotifySearchFragment extends Fragment {
     private final AdapterView.OnItemClickListener mOnSportifyResultItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent topTrackIntent = new Intent(getActivity(), TopTracksActivity.class);
-
             Artist artist =  mAdapter.getItem(position);
-            topTrackIntent.putExtra(TopTracksFragment.PARAM_EXTRA_ARTIST_ID, artist.id);
-            topTrackIntent.putExtra(TopTracksActivity.PARAM_ARTIST_NAME, artist.name);
-            startActivity(topTrackIntent);
+            ((MainActivity)getActivity()).onItemSelected(artist.id, artist.name);
         }
     };
 
     private class SearchArtistsTask extends AsyncTask<String, Integer, List<Artist>> {
         @Override
         protected List<Artist> doInBackground(String... params) {
+
             HashMap<String, Object> optionMap = new HashMap<>();
             optionMap.put(SpotifyService.MARKET, "NL");
             optionMap.put(SpotifyService.LIMIT, "20");
@@ -192,38 +204,7 @@ public class SpotifySearchFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if(outState == null){
-            outState = new Bundle();
-        }
-
-        if(mQueryArtists != null && mQueryArtists.size() > 0) {
-            Gson gson = new Gson();
-            outState.putString(SAVED_INSTANCE_RESULTS, gson.toJson(mQueryArtists));
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-
-        if(savedInstanceState == null){
-            super.onViewStateRestored(null);
-            return;
-        }
-
-        String queryResult = savedInstanceState.getString(SAVED_INSTANCE_RESULTS, "");
-        if(!queryResult.isEmpty()){
-            Gson gson = new Gson();
-            Type artistListType = new TypeToken<ArrayList<Artist>>() {}.getType();
-            mQueryArtists = gson.fromJson(queryResult, artistListType);
-            if(mAdapter != null) {
-                mAdapter.addAll(mQueryArtists);
-            }
-        }
-
-        super.onViewStateRestored(savedInstanceState);
+    public interface OnItemSelectedCallback {
+        void onItemSelected(String artistId, String artistName);
     }
 }

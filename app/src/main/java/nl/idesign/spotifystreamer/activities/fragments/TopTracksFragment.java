@@ -12,15 +12,18 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.method.CharacterPickerDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import nl.idesign.spotifystreamer.Constants;
 import nl.idesign.spotifystreamer.R;
+import nl.idesign.spotifystreamer.activities.PlayerActivity;
 import nl.idesign.spotifystreamer.adapters.SpotifyTopTracksAdapter;
 import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
 import nl.idesign.spotifystreamer.service.SpotifyIntentService;
@@ -32,57 +35,92 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
 
     private static final String LOG_TAG = TopTracksFragment.class.getSimpleName();
     public static final String PARAM_EXTRA_ARTIST_ID = "artist_id";
+    private static final String PLAYER_FRAGMENT_TAG = "player_fragment";
+
 
     private static TopTracksFragment mInstance;
     private static final int TOP_TRACKS_LOADER = 0;
 
     private SpotifyTopTracksAdapter mAdapter;
 
-    public static TopTracksFragment getInstance(){
-        if(mInstance == null){
-            mInstance = new TopTracksFragment();
-        }
+    private String mArtistId;
 
-        return mInstance;
+    boolean mIsTwoPane = false;
+
+    public void setTwoPane(boolean isTwoPane){
+        mIsTwoPane = isTwoPane;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_top_tracks, container);
+        View rootView = inflater.inflate(R.layout.fragment_top_tracks, null);
 
         Intent intent = getActivity().getIntent();
 
-        String artistId = intent.getStringExtra(PARAM_EXTRA_ARTIST_ID);
-        if(artistId == null || artistId.isEmpty()){
-            Log.e(LOG_TAG, "No artist ID found, we can't get the top tracks");
-            getActivity().finish();
+        mArtistId = intent.getStringExtra(PARAM_EXTRA_ARTIST_ID);
+
+        if(mArtistId != null && !mArtistId.isEmpty()){
+            getTopTracks();
         }
 
         IntentFilter filter = new IntentFilter(SpotifyIntentService.BROADCAST_RESULT);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new TopTracksResponseReceiver(), filter);
 
-        SpotifyIntentService.getTopTracks(getActivity(), artistId);
-
-
-
         ListView topTracksListView = (ListView)rootView.findViewById(R.id.top_tracks_listview);
         mAdapter = new SpotifyTopTracksAdapter(getActivity(), true);
         topTracksListView.setAdapter(mAdapter);
 
+
+        topTracksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mIsTwoPane) {
+                    //Start the fragment as a dialog
+                    PlayerFragment playerFragment = new PlayerFragment();
+                    playerFragment.setTrackId(mAdapter.getItemId(position));
+                    playerFragment.setArtistId(mArtistId);
+                    playerFragment.show(getFragmentManager(), PLAYER_FRAGMENT_TAG);
+                } else {
+                    Intent playerIntent = new Intent(getActivity(), PlayerActivity.class);
+                    playerIntent.putExtra(PlayerFragment.PARAM_EXTRA_TRACK_ID, mAdapter.getItemId(position));
+                    playerIntent.putExtra(PlayerFragment.PARAM_EXTRA_ARTIST_ID, mArtistId);
+                    startActivity(playerIntent);
+                }
+            }
+        });
+
         return rootView;
+    }
+
+
+    public void setArtistId(String artistId){
+        mArtistId = artistId;
+        getTopTracks();
+    }
+
+    private void getTopTracks(){
+        SpotifyIntentService.getTopTracks(getActivity(), mArtistId);
+        getLoaderManager().restartLoader(TOP_TRACKS_LOADER, null,this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-        String artistId = intent.getStringExtra(PARAM_EXTRA_ARTIST_ID);
+        if(mArtistId == null || mArtistId.isEmpty()){
+            return null;
+        }
         return new CursorLoader(getActivity(),
                 SpotifyStreamerDataContract.TopTracksEntry.CONTENT_URI,
                 SpotifyTopTracksAdapter.mProjection,
                 SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + " = ? ",
-                new String[]{artistId},
-                SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_POPULARITY + " ASC ");
+                new String[]{mArtistId},
+                SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_POPULARITY + "," + SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME + " ASC ");
     }
 
     @Override
@@ -108,6 +146,8 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
             if(result == Constants.BROADCAST_RESULT_FAILED){
                 //Something went wrong, show a message
                 Toast.makeText(getActivity(),getActivity().getString(R.string.spotify_toptracks_failed), Toast.LENGTH_LONG);
+            }else {
+
             }
         }
     }

@@ -4,12 +4,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<EditText
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/spotify_search"
-    android:id="@+id/spotify_search_textview"
-    android:singleLine="true" />
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionDone|actionGo|actionSearch"
+        android:queryHint="@string/spotify_search"
+        android:id="@+id/spotify_search_textview"
+        android:singleLine="true"
+        android:iconifiedByDefault="false"
+        android:showDividers="beginning"></SearchView>
     <ListView
         android:id="@+id/spotify_search_result_listview"
         android:layout_width="match_parent"

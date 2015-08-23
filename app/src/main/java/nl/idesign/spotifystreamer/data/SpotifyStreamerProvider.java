@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -89,7 +90,7 @@ public class SpotifyStreamerProvider extends ContentProvider {
                 String trackId = SpotifyStreamerDataContract.TopTracksEntry.getTopTrackID(uri);
                 retCursor = db.query(SpotifyStreamerDataContract.TopTracksEntry.TABLE_NAME,
                         projection,
-                        SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID + " = ? ",
+                        SpotifyStreamerDataContract.TopTracksEntry._ID + " = ? ",
                         new String[]{trackId},
                         null,
                         null,
@@ -145,7 +146,7 @@ public class SpotifyStreamerProvider extends ContentProvider {
                     //Failed to add a record
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                returnUri = SpotifyStreamerDataContract.TopTracksEntry.buildTopTrackUri(values.getAsString(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_ID));
+                returnUri = SpotifyStreamerDataContract.TopTracksEntry.buildTopTrackUri(values.getAsLong(SpotifyStreamerDataContract.TopTracksEntry._ID));
 
                 break;
             }

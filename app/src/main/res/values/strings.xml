@@ -26,6 +26,18 @@
     <!-- Connectivity messages -->
     <string name="no_connection_title" >Not connected</string>
     <string name="no_connection_description" >Hmm, It seems you\'re not connected to the internet. To use this app, you need to be connected to the cloud</string>
+    <string name="title_activity_player">PlayerActivity</string>
+
+    <!-- Spotify Player Strings -->
+    <string name="no_track_id" >No trackid is found</string>
+
+    <string name="player_playback_error" >Can\'t playback</string>
+    <string name="player_playback_error_desc" >Something went wrong while streaming the track. Would you like to try again?</string>
+
+    <string name="hello_world">Hello world!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

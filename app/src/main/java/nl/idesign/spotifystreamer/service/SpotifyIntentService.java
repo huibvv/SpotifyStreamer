@@ -79,11 +79,13 @@ public class SpotifyIntentService extends IntentService {
         mSpotifyService.getArtistTopTrack(artistId, queryParams,  new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, Response response) {
+
                 if (tracks.tracks.size() == 0) {
                     return;
                 }
                 ContentValues artistValues = new ContentValues();
                 artistValues.put(SpotifyStreamerDataContract.ArtistEntry.COLUMN_NAME_ARTIST_ID, artistId);
+
                 getBaseContext().getContentResolver().insert(SpotifyStreamerDataContract.ArtistEntry.CONTENT_URI, artistValues);
 
                 ContentValues values;
@@ -98,6 +100,7 @@ public class SpotifyIntentService extends IntentService {
 
                     //Hmm, artists is a list. Lets assume that we always have one artist
                     values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID, track.artists.get(0).id);
+                    values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_NAME, track.artists.get(0).name);
                     values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME, track.name);
                     values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_POPULARITY, track.popularity);
                     values.put(SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_PREVIEW_URL, track.preview_url);

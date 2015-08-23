@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:minWidth="500dp"
+    android:gravity="center_horizontal"
+    android:layout_height="match_parent">
+<TextView
+    android:id="@+id/spotify_player_artist_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Coldplay"/>
+    <TextView
+        android:id="@+id/spotify_player_album_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ghost Stories"/>
+    <ImageView
+        android:id="@+id/spotify_player_album_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/no_image"/>
+    <TextView
+        android:id="@+id/spotify_player_track_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="A sky full of stars"/>
+    <SeekBar
+        android:id="@+id/spotify_player_track_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="30"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/spotify_player_previous_image_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:adjustViewBounds="true"
+            android:src="@android:drawable/ic_media_previous"
+            />
+        <ImageButton
+            android:id="@+id/spotify_player_play_image_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:adjustViewBounds="true"
+            android:src="@android:drawable/ic_media_play"
+            />
+        <ImageButton
+            android:id="@+id/spotify_player_next_image_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:adjustViewBounds="true"
+            android:src="@android:drawable/ic_media_next"
+            />
+    </LinearLayout>
+</LinearLayout>

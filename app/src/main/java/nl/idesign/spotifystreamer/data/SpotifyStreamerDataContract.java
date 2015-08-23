@@ -14,6 +14,7 @@ public class SpotifyStreamerDataContract {
 
     public static final String PATH_ARTISTS = "artists";
     public static final String PATH_TOP_TRACKS = "top_tracks";
+    public static final String PATH_INCLUDE_ARTIST = "include";
 
     public static final class ArtistEntry implements BaseColumns{
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_ARTISTS).build();
@@ -49,14 +50,15 @@ public class SpotifyStreamerDataContract {
 
         public static final String COLUMN_NAME_TRACK_ID = "track_id";
         public static final String COLUMN_NAME_ARTIST_ID = "artist_id";
+        public static final String COLUMN_NAME_ARTIST_NAME = "artist_name";
         public static final String COLUMN_NAME_TRACK_NAME = "track_name";
         public static final String COLUMN_NAME_ALBUM_NAME = "album_name";
         public static final String COLUMN_NAME_ALBUM_THUMBNAIL = "album_thumbnail";
         public static final String COLUMN_NAME_TRACK_POPULARITY = "track_popularity";
         public static final String COLUMN_NAME_TRACK_PREVIEW_URL = "track_preview_url";
 
-        public static Uri buildTopTrackUri(String trackID){
-            return CONTENT_URI.buildUpon().appendPath(trackID).build();
+        public static Uri buildTopTrackUri(long trackID){
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(trackID)).build();
         }
 
         public static String getTopTrackID(Uri topTrackUri){
