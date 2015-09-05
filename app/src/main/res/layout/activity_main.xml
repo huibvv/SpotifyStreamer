@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/spotify_main_container"
     tools:context=".MainActivity">
 
     <fragment
@@ -9,5 +10,5 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:name="nl.idesign.spotifystreamer.activities.fragments.SpotifySearchFragment"
         android:id="@+id/spotify_search_fragment"
-       ></fragment>
+       />
 </RelativeLayout>

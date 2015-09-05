@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="country_codes">
+        <item>@string/country_use_default</item>
+        <item>@string/country_use_netherlands</item>
+        <item>@string/country_use_uk</item>
+        <item>@string/country_use_usa</item>
+    </string-array>
+    <string-array name="country_codes_entries">
+        <item></item>
+        <item>NL</item>
+        <item>UK</item>
+        <item>US</item>
+    </string-array>
+
+</resources>

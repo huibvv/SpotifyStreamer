@@ -3,30 +3,23 @@ package nl.idesign.spotifystreamer.activities.fragments;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -34,7 +27,6 @@ import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import nl.idesign.spotifystreamer.R;
 import nl.idesign.spotifystreamer.activities.MainActivity;
-import nl.idesign.spotifystreamer.activities.TopTracksActivity;
 import nl.idesign.spotifystreamer.adapters.SpotifySearchAdapter;
 import nl.idesign.spotifystreamer.utils.Connectivity;
 
@@ -136,6 +128,7 @@ public class SpotifySearchFragment extends Fragment {
         }
         mLoadingResults = true;
         mShouldClear = true;
+
         new SearchArtistsTask().execute(artist);
 
     }
@@ -174,7 +167,15 @@ public class SpotifySearchFragment extends Fragment {
         protected List<Artist> doInBackground(String... params) {
 
             HashMap<String, Object> optionMap = new HashMap<>();
-            optionMap.put(SpotifyService.MARKET, "NL");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String country = prefs.getString("pref_country", "");
+            if (country.isEmpty()){
+                //Get the default locale country
+                country = Locale.getDefault().getCountry();
+            }
+
+
+            optionMap.put(SpotifyService.MARKET, country);
             optionMap.put(SpotifyService.LIMIT, "20");
             if (mShouldClear) {
                 optionMap.put(SpotifyService.OFFSET, 0);

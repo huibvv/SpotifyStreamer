@@ -12,8 +12,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.method.CharacterPickerDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,7 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
 
     private String mArtistId;
 
-    boolean mIsTwoPane = false;
+    private boolean mIsTwoPane = false;
 
     public void setTwoPane(boolean isTwoPane){
         mIsTwoPane = isTwoPane;
@@ -146,8 +144,6 @@ public class TopTracksFragment extends Fragment implements LoaderManager.LoaderC
             if(result == Constants.BROADCAST_RESULT_FAILED){
                 //Something went wrong, show a message
                 Toast.makeText(getActivity(),getActivity().getString(R.string.spotify_toptracks_failed), Toast.LENGTH_LONG);
-            }else {
-
             }
         }
     }

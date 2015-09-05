@@ -12,7 +12,7 @@
         android:id="@+id/spotify_search_textview"
         android:singleLine="true"
         android:iconifiedByDefault="false"
-        android:showDividers="beginning"></SearchView>
+        android:showDividers="beginning" />
     <ListView
         android:id="@+id/spotify_search_result_listview"
         android:layout_width="match_parent"

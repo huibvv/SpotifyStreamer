@@ -1,0 +1,19 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="pref_notification"
+        android:title="@string/pref_title_country"
+        android:summary="@string/pref_title_show_notificationse"
+        android:defaultValue="true" />
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:key="pref_country"
+        android:title="@string/pref_title_country"
+        android:defaultValue="-1"
+        android:entries="@array/country_codes"
+        android:entryValues="@array/country_codes_entries"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+</PreferenceScreen>

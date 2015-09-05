@@ -3,21 +3,19 @@ package nl.idesign.spotifystreamer.activities.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
-import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -28,53 +26,23 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import nl.idesign.spotifystreamer.R;
-import nl.idesign.spotifystreamer.data.SpotifyStreamerDataContract;
+import nl.idesign.spotifystreamer.SpotifyStreamer;
 import nl.idesign.spotifystreamer.data.model.Track;
 import nl.idesign.spotifystreamer.service.MediaPlayerService;
 
 /**
  * Created by huib on 4-7-2015.
  */
-public class PlayerFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PlayerFragment extends DialogFragment{
+
+    private static final String LOG_TAG = PlayerFragment.class.getSimpleName();
 
     public static final String PARAM_EXTRA_TRACK_ID = "track_id";
     public static final String PARAM_EXTRA_ARTIST_ID = "artist_id";
 
-    private static final int RUNNABLE_TIME = 100;
-    private static final int CURSOR_LOADER = 0;
-
-
     private long mTrackId = -1;
     private String mCurrentArtistId;
-
-    private List<Track> mPlaylist;
-    private List<Long> mPlaylistIndex;
-
-    private static final String[] mProjection = new String[]{
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_NAME,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_PREVIEW_URL,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_THUMBNAIL,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_NAME,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID,
-            SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_POPULARITY,
-            SpotifyStreamerDataContract.TopTracksEntry._ID,
-    };
-
-    private static int COL_ALBUM_NAME = 0;
-    private static int COL_TRACK_NAME = 1;
-    private static int COL_TRACK_PREVIEW_URL = 2;
-    private static int COL_THUMBNAIL = 3;
-    private static int COL_ARTIST_NAME = 4;
-    private static int COL_ARTIST_ID = 5;
-    private static int COL_POPULARITY = 6;
-    private static int COL_TRACK_ID = 7;
 
     private TextView mTrackNameTextView;
     private TextView mAlbumNameTextView;
@@ -87,8 +55,6 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
 
 
     private MediaPlayerService mService;
-    boolean mBound = false;
-    private String mPreviewUrl;
 
     private boolean mIsSeeking = false;
     private boolean mMediaPlayerLoaded = false;
@@ -112,6 +78,7 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         setRetainInstance(true);
     }
 
@@ -124,21 +91,22 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_player, container);
+
+        SpotifyStreamer streamer = (SpotifyStreamer)getActivity().getApplicationContext();
+        mService = streamer.getMediaService();
+
 
         if(!mIsDialog) {
             Intent intent = getActivity().getIntent();
             mTrackId = intent.getLongExtra(PARAM_EXTRA_TRACK_ID, -1);
             mCurrentArtistId = intent.getStringExtra(PARAM_EXTRA_ARTIST_ID);
-        }else {
-            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
         //bind the controls
         mTrackNameTextView = (TextView)rootView.findViewById(R.id.spotify_player_track_name);
-        mAlbumNameTextView = (TextView)rootView.findViewById(R.id.spotify_player_album_name);
         mArtistNameTextView = (TextView)rootView.findViewById(R.id.spotify_player_artist_name);
-
 
         mAlbumImageView = (ImageView) rootView.findViewById(R.id.spotify_player_album_image);
         mAlbumNameTextView = (TextView)rootView.findViewById(R.id.spotify_player_album_name);
@@ -148,40 +116,45 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
         mPlayerPreviousImageView = (ImageButton)rootView.findViewById(R.id.spotify_player_previous_image_button);
         mPlayerPlayImageView = (ImageButton)rootView.findViewById(R.id.spotify_player_play_image_button);
         mPlayerNextImageView = (ImageButton)rootView.findViewById(R.id.spotify_player_next_image_button);
-        mPlayerProgressSeekbar = (SeekBar)rootView.findViewById(R.id.spotify_player_track_seekbar);
 
         mPlayerPlayImageView.setOnClickListener(mOnPlayClickedListener);
         mPlayerNextImageView.setOnClickListener(mOnNextClickedListener);
         mPlayerPreviousImageView.setOnClickListener(mOnPreviousClickedListener);
 
+        mPlayerProgressSeekbar = (SeekBar)rootView.findViewById(R.id.spotify_player_track_seekbar);
+        mAlbumNameTextView = (TextView)rootView.findViewById(R.id.spotify_player_album_name);
         mPlayerProgressSeekbar.setOnSeekBarChangeListener(mSeekbarChangedListener);
+
+
+        Track track = mService.loadMediaPlayer(mTrackId, mCurrentArtistId);
+
+        if(!mIsDialog) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(track.getArtistName());
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(track.getTrackname());
+
+        }else {
+            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+        //setData(track);
 
         return rootView;
     }
 
-    private void setData(){
 
-        int index = mPlaylistIndex.indexOf(mTrackId);
-        Track track = mPlaylist.get(index) ;
-
+    private void setData(Track track){
         mAlbumNameTextView.setText(track.getAlbumName());
         mArtistNameTextView.setText(track.getArtistName());
         Picasso.with(getActivity()).load(track.getThumbnail()).into(mAlbumImageView);
+        mAlbumImageView.setContentDescription(String.format(getString(R.string.content_description_album_image),track.getAlbumName(),track.getArtistName()));
 
         mTrackNameTextView.setText(track.getTrackname());
-
-        mPreviewUrl = track.getPreviewUrl();
-
-        if(mBound){
-            loadMediaPlayer();
-        }
-
     }
 
 
     private void startPlaying(){
-        if(mMediaplayer != null)
+        if(mMediaplayer != null) {
             mMediaplayer.start();
+        }
     }
 
     private void stopPlaying(){
@@ -201,7 +174,7 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
         mPlayerProgressSeekbar.setEnabled(true);
     }
 
-    private View.OnClickListener mOnPlayClickedListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnPlayClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(!mMediaPlayerLoaded){
@@ -218,32 +191,26 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
         }
     };
 
-    private View.OnClickListener mOnNextClickedListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnNextClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             //Load the next song
-            int index = mPlaylistIndex.indexOf(mTrackId);
-            if(index < (mPlaylist.size()-1)) {
-                mTrackId = mPlaylistIndex.get(index + 1);
-                setData();
-            }
+            Track track = mService.nextTrack();
+            setData(track);
         }
     };
 
-    private View.OnClickListener mOnPreviousClickedListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnPreviousClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             //Load the previous song
-            int index = mPlaylistIndex.indexOf(mTrackId);
-            if(index > 0) {
-                mTrackId = mPlaylistIndex.get(index - 1);
-                setData();
-            }
+            Track track = mService.previousTrack();
+            setData(track);
 
         }
     };
 
-    private SeekBar.OnSeekBarChangeListener mSeekbarChangedListener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener mSeekbarChangedListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if(mIsSeeking)
@@ -262,77 +229,25 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
     };
 
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(mTrackId == -1){
-            return null;
-        }
-
-        return new CursorLoader(getActivity(),
-                SpotifyStreamerDataContract.TopTracksEntry.CONTENT_URI,
-                mProjection,
-                SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ARTIST_ID + " = ?",
-                new String[]{mCurrentArtistId},
-                SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_POPULARITY + "," + SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_TRACK_NAME + " ASC "
-                );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        //Set the values
-
-        if(mPlaylist == null){
-            mPlaylist = new ArrayList<>();
-        }
-
-        if(mPlaylistIndex == null){
-            mPlaylistIndex = new ArrayList<>();
-        }
-
-        Track track = null;
-        while(data.moveToNext()){
-            track = new Track();
-            track.setAlbumName(data.getString(COL_ALBUM_NAME));
-            track.setArtistId(data.getString(COL_ARTIST_ID));
-            track.setArtistName(data.getString(COL_ARTIST_NAME));
-            track.setId(data.getLong(COL_TRACK_ID));
-            track.setPopularity(data.getInt(COL_POPULARITY));
-            track.setThumbnail(data.getString(COL_THUMBNAIL));
-            track.setTrackname(data.getString(COL_TRACK_NAME));
-            track.setPreviewUrl(data.getString(COL_TRACK_PREVIEW_URL));
-            mPlaylist.add(track);
-            mPlaylistIndex.add(track.getId());
-        }
-
-        setData();
-
-
-    }
-
-    private void loadMediaPlayer(){
-        mService.loadMediaPlayer(mPreviewUrl);
-
-    }
-
-    private MediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+    private final MediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
 
         }
     };
 
-    private MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
+    private final MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
+            mMediaplayer.setOnCompletionListener(null);
             mPlayerProgressSeekbar.setProgress(0);
             mPlayerPlayImageView.setImageDrawable(getActivity().getResources().getDrawable(android.R.drawable.ic_media_play));
         }
     };
 
-    private MediaPlayerService.OnPreparedListener mOnPreparedListener = new MediaPlayerService.OnPreparedListener() {
+    private final MediaPlayerService.OnPreparedListener mOnPreparedListener = new MediaPlayerService.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mp) {
-            //mMediaplayer.setVolume();
             mMediaplayer = mp;
             mMediaplayer.setOnCompletionListener(mOnCompletionListener);
             mService.setOnPlaybackUpdateListener(mPlaybackListener);
@@ -344,7 +259,7 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
         }
     };
 
-    private MediaPlayerService.OnPlaybackUpdateListener mPlaybackListener = new MediaPlayerService.OnPlaybackUpdateListener() {
+    private final  MediaPlayerService.OnPlaybackUpdateListener mPlaybackListener = new MediaPlayerService.OnPlaybackUpdateListener() {
         @Override
         public void onPlaybackUpdate(int duration) {
             if(!mIsSeeking)
@@ -352,16 +267,6 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
         }
     };
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(CURSOR_LOADER, null, this);
-        super.onActivityCreated(savedInstanceState);
-    }
 
     private void showPlaybackErrorDialog(){
        new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.player_playback_error))
@@ -381,51 +286,69 @@ public class PlayerFragment extends DialogFragment implements LoaderManager.Load
                }).show();
     }
 
-    /**
-     * Developer docs Android Bound service
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.ServiceBinder binder = (MediaPlayerService.ServiceBinder) service;
-            mService = binder.getService();
-            mService.setOnPreparedListener(mOnPreparedListener);
-
-            if(!mMediaPlayerLoaded && mPreviewUrl != null )
-                loadMediaPlayer();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        mService.setOnPlaybackUpdateListener(null);
+//        mService.removeOnPreparedListener(mOnPreparedListener);
+//        mMediaplayer.setOnCompletionListener(null);
+//    }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Intent intent = new Intent(getActivity(), MediaPlayerService.class);
-        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        getActivity().startService(intent);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_player, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // Attach an intent to this ShareActionProvider.  You can update this at any time,
+        // like when the user selects a new piece of data they might like to share.
+        if (mShareActionProvider != null ) {
+            mShareActionProvider.setShareIntent(createSpotifyShareIntent());
+        } else {
+            Log.d(LOG_TAG, "Share Action Provider is null?");
+        }
+
+    }
+
+    /** Returns a share intent */
+    private Intent createSpotifyShareIntent(){
+        Track currentTrack = mService.getCurrentTrack();
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.action_share_title));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.action_share_content), currentTrack.getPreviewUrl()));
+        return intent;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mService.addOnPreparedListener(mOnPreparedListener);
+        setData(mService.getCurrentTrack());
+        if(mMediaplayer != null){
+            mMediaplayer.setOnCompletionListener(mOnCompletionListener);
+            mService.setOnPlaybackUpdateListener(mPlaybackListener);
+            mPlayerProgressSeekbar.setMax(mMediaplayer.getDuration());
+        }
 
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        // Unbind from the service
-        if (mBound) {
+    public void onPause() {
+        super.onPause();
+        mService.removeOnPreparedListener(mOnPreparedListener);
+
+        if(mMediaplayer != null) {
             mService.setOnPlaybackUpdateListener(null);
-            mService.setOnPreparedListener(null);
             mMediaplayer.setOnCompletionListener(null);
-            getActivity().unbindService(mConnection);
-            mBound = false;
         }
     }
-
 
 }

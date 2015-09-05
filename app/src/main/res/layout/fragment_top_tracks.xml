@@ -5,5 +5,5 @@
 <ListView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/top_tracks_listview"></ListView>
+    android:id="@+id/top_tracks_listview" />
 </LinearLayout>

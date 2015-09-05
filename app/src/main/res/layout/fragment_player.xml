@@ -12,12 +12,12 @@
     android:id="@+id/spotify_player_artist_name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Coldplay"/>
+    />
     <TextView
         android:id="@+id/spotify_player_album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ghost Stories"/>
+        />
     <ImageView
         android:id="@+id/spotify_player_album_image"
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
         android:id="@+id/spotify_player_track_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="A sky full of stars"/>
+        />
     <SeekBar
         android:id="@+id/spotify_player_track_seekbar"
         android:layout_width="match_parent"
@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description_previous_track"
             android:src="@android:drawable/ic_media_previous"
             />
         <ImageButton
@@ -52,6 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description_play_track"
             android:src="@android:drawable/ic_media_play"
             />
         <ImageButton
@@ -60,6 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description_next_track"
             android:src="@android:drawable/ic_media_next"
             />
     </LinearLayout>

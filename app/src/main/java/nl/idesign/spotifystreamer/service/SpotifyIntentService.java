@@ -4,12 +4,15 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -29,10 +32,7 @@ public class SpotifyIntentService extends IntentService {
 
     public static final String BROADCAST_RESULT = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT";
     public static final String BROADCAST_RESULT_CODE = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT_CODE";
-    public static final String BROADCAST_RESULT_MESSAGE = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT_MESSAGE";
-    //public static final String BROADCAST_ACTION = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT";
-
-
+    private static final String BROADCAST_RESULT_MESSAGE = "nl.idesign.spotifystreamer.service.TOP_TRACKS_RESULT_MESSAGE";
 
     private static final String LOG_TAG = SpotifyIntentService.class.getSimpleName();
 
@@ -74,7 +74,15 @@ public class SpotifyIntentService extends IntentService {
         }
 
         Map<String, Object> queryParams = new HashMap<>();
-        queryParams.put("country", "NL");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String country = prefs.getString("pref_country", "");
+        if (country.isEmpty()){
+            //Get the default locale vountry
+            country = Locale.getDefault().getCountry();
+        }
+
+        queryParams.put("country", country);
 
         mSpotifyService.getArtistTopTrack(artistId, queryParams,  new Callback<Tracks>() {
             @Override
@@ -109,10 +117,6 @@ public class SpotifyIntentService extends IntentService {
 
                 ContentValues[] cvArray = new ContentValues[contentList.size()];
                 int numInserted = getBaseContext().getContentResolver().bulkInsert(SpotifyStreamerDataContract.TopTracksEntry.CONTENT_URI, contentList.toArray(cvArray));
-
-                if(numInserted == 0){
-                    //hmm, something went wrong i guess
-                }
 
                 Intent resultIntent = new Intent(BROADCAST_RESULT);
                 resultIntent.putExtra(BROADCAST_RESULT_CODE, Constants.BROADCAST_RESULT_OK);

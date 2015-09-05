@@ -4,6 +4,6 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
-
+    <style name="Theme.NoTitle" parent="Theme.AppCompat.Light.NoActionBar" />
 
 </resources>

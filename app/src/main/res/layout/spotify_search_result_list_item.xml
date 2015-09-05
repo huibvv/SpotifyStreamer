@@ -10,6 +10,7 @@
     android:layout_height="@dimen/spotify_image_height"
     android:adjustViewBounds="true"
     android:scaleType="centerCrop"
+    android:contentDescription="@string/content_description_artist_image"
     android:src="@drawable/no_image"/>
     <TextView
         android:layout_marginLeft="@dimen/list_item_text_padding"

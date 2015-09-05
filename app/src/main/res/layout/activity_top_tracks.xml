@@ -1,13 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:padding="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
+    android:id="@+id/spotify_top_tracks_container"
     tools:context="nl.idesign.spotifystreamer.activities.TopTracksActivity">
 
     <fragment
+        android:padding="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:name="nl.idesign.spotifystreamer.activities.fragments.TopTracksFragment"
         android:id="@+id/spotify_top_tracks_fragment"
-        ></fragment>
-
+       />
 </RelativeLayout>

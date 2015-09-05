@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+
+    <string name="action_share" >Share</string>
+    <string name="action_share_title" >Listen to this</string>
+    <string name="action_share_content" >Hey there, Listen to this song! <xliff:g id="song">%1s</xliff:g></string>
 
     <string name="content_authority" translatable="false">nl.idesign.spotifystreamer</string>
 
@@ -34,10 +38,20 @@
     <string name="player_playback_error" >Can\'t playback</string>
     <string name="player_playback_error_desc" >Something went wrong while streaming the track. Would you like to try again?</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="country_use_default">Use default</string>
+    <string name="country_use_netherlands">Netherlands</string>
+    <string name="country_use_uk">United Kingdom</string>
+    <string name="country_use_usa">United States</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
 
+    <string name="content_description_album_image">Album image for <xliff:g id="song">%1s</xliff:g> - <xliff:g id="song">%2s</xliff:g></string>
+    <string name="content_description_artist_image">Artist image for <xliff:g id="song">%1s</xliff:g></string>
+    <string name="content_description_play_track">Play track</string>
+    <string name="content_description_previous_track">Previous track</string>
+    <string name="content_description_next_track">Next track</string>
 
 </resources>

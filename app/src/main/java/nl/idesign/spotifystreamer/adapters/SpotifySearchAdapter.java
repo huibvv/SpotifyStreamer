@@ -45,7 +45,7 @@ public class SpotifySearchAdapter extends ArrayAdapter<Artist> {
         holder.mArtistImage.setContentDescription(String.format(mContext.getString(R.string.spotify_search_content_description), artist.name));
 
         if(artist.images == null || artist.images.size() == 0){
-            //Set a default image
+            holder.mArtistImage.setImageResource(R.drawable.no_image);
         }else {
             Picasso.with(mContext).load(artist.images.get(0).url).into(holder.mArtistImage);
         }

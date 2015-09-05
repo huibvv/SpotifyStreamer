@@ -27,11 +27,11 @@ public class SpotifyTopTracksAdapter extends CursorAdapter {
             SpotifyStreamerDataContract.TopTracksEntry.COLUMN_NAME_ALBUM_THUMBNAIL
     };
 
-    public final static int COL_ID = 0;
-    public final static int COL_TRACK_ID = 1;
-    public final static int COL_TRACK_NAME = 2;
-    public final static int COL_ALBUM_NAME = 3;
-    public final static int COL_THUMBNAIL = 4;
+    private final static int COL_ID = 0;
+    private final static int COL_TRACK_ID = 1;
+    private final static int COL_TRACK_NAME = 2;
+    private final static int COL_ALBUM_NAME = 3;
+    private final static int COL_THUMBNAIL = 4;
 
     private final LayoutInflater mInflater;
 
@@ -60,16 +60,16 @@ public class SpotifyTopTracksAdapter extends CursorAdapter {
         String imageUrl = cursor.getString(COL_THUMBNAIL);
         holder.mAlbumImageView.setContentDescription(String.format(context.getString(R.string.spotify_top_tracks_content_description), cursor.getString(COL_ALBUM_NAME)));
         if(imageUrl.isEmpty()){
-            //Set a default image
+            holder.mAlbumImageView.setImageResource(R.drawable.no_image);
         }else {
             Picasso.with(context).load(imageUrl).into(holder.mAlbumImageView);
         }
     }
 
     private class ViewHolder{
-        public ImageView mAlbumImageView;
-        public TextView mTrackNameTextView;
-        public TextView mAlbumNameTextView;
+        public final ImageView mAlbumImageView;
+        public final TextView mTrackNameTextView;
+        public final TextView mAlbumNameTextView;
 
         public ViewHolder(View rootView){
             mAlbumImageView = (ImageView)rootView.findViewById(R.id.spotify_top_track_album_imageview);
